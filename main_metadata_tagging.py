@@ -74,8 +74,19 @@ async def add_coding_preference(text: str, project: str = "default_project") -> 
     try:
         messages = [{"role": "user", "content": text}]
         # Pass metadata to tag the memory with the project name
-        mem0_client.add(messages, user_id=DEFAULT_USER_ID, output_format="v1.1", metadata={"project": project})
-        return f"Successfully added preference for project '{project}': {text}"
+        result = mem0_client.add(messages, user_id=DEFAULT_USER_ID, output_format="v1.1", metadata={"project": project})
+        
+        # Extract the memory ID from the result if available
+        memory_id = None
+        if isinstance(result, dict) and 'id' in result:
+            memory_id = result['id']
+        elif isinstance(result, list) and len(result) > 0 and isinstance(result[0], dict) and 'id' in result[0]:
+            memory_id = result[0]['id']
+            
+        if memory_id:
+            return f"Successfully added preference with ID {memory_id} for project '{project}': {text}"
+        else:
+            return f"Successfully added preference for project '{project}': {text}"
     except Exception as e:
         return f"Error adding preference: {str(e)}"
 
@@ -96,9 +107,23 @@ async def get_all_coding_preferences(project: str = "default_project") -> str:
     Each preference includes metadata about when it was created and its content type.
     """
     try:
-        # Use metadata filter to get only memories tagged with the given project
-        memories = mem0_client.get_all(user_id=DEFAULT_USER_ID, page=1, page_size=50, metadata_filters={"project": project})
-        flattened_memories = [memory["memory"] for memory in memories["results"]]
+        # Use proper v2 API format with filters
+        memories = mem0_client.get_all(
+            filters={"metadata": {"project": project}},
+            user_id=DEFAULT_USER_ID,
+            page=1,
+            page_size=50,
+            version="v2"
+        )
+        
+        # Handle different response formats - v2 API returns a list directly
+        if isinstance(memories, list):
+            flattened_memories = memories
+        elif isinstance(memories, dict) and "results" in memories:
+            flattened_memories = memories["results"]
+        else:
+            flattened_memories = []
+            
         return json.dumps(flattened_memories, indent=2)
     except Exception as e:
         return f"Error getting preferences: {str(e)}"
@@ -133,9 +158,22 @@ async def search_coding_preferences(query: str, project: str = "default_project"
         project: The project identifier to restrict the search to
     """
     try:
-        # Use metadata filtering when searching
-        memories = mem0_client.search(query, user_id=DEFAULT_USER_ID, output_format="v1.1", metadata_filters={"project": project})
-        flattened_memories = [memory["memory"] for memory in memories["results"]]
+        # Use proper v2 API format with filters
+        search_result = mem0_client.search(
+            query, 
+            filters={"metadata": {"project": project}},
+            user_id=DEFAULT_USER_ID,
+            version="v2"
+        )
+        
+        # Handle different response formats
+        if isinstance(search_result, dict) and "results" in search_result:
+            flattened_memories = search_result["results"]
+        elif isinstance(search_result, list):
+            flattened_memories = search_result
+        else:
+            flattened_memories = []
+            
         return json.dumps(flattened_memories, indent=2)
     except Exception as e:
         return f"Error searching preferences: {str(e)}"
