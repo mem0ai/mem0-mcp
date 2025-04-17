@@ -1,3 +1,4 @@
+from __future__ import annotations
 from mcp.server.fastmcp import FastMCP
 from starlette.applications import Starlette
 from mcp.server.sse import SseServerTransport
@@ -107,18 +108,24 @@ async def get_all_coding_preferences() -> str:
     providing answers to ensure you leverage existing knowledge."""
 )
 async def search_coding_preferences(query: str) -> str:
-    """Search coding preferences using semantic search.
+    """
+    Search coding preferences using semantic search.
 
-    The search is powered by natural language understanding, allowing you to find:
-    - Code implementations and patterns
-    - Programming solutions and techniques
-    - Technical documentation and guides
-    - Best practices and standards
-    Results are ranked by relevance to your query.
+    Parameters
+    ----------
+    query : str
+        Search query string describing what you're looking for. Can be natural language
+        or specific technical terms.
 
-    Args:
-        query: Search query string describing what you're looking for. Can be natural language
-              or specific technical terms.
+    Returns
+    -------
+    str
+        A JSON formatted string containing the search results, ranked by relevance.
+
+    Examples
+    --------
+    >>> result = await search_coding_preferences("Python type annotations")
+    >>> print(result)
     """
     try:
         memories = mem0_client.search(query, user_id=DEFAULT_USER_ID, output_format="v1.1")
@@ -127,8 +134,29 @@ async def search_coding_preferences(query: str) -> str:
     except Exception as e:
         return f"Error searching preferences: {str(e)}"
 
+# Updated type annotations to Python >3.11 style and added numpy-style docstrings with examples
 def create_starlette_app(mcp_server: Server, *, debug: bool = False) -> Starlette:
-    """Create a Starlette application that can server the provied mcp server with SSE."""
+    """
+    Create a Starlette application that can serve the provided MCP server with SSE.
+
+    Parameters
+    ----------
+    mcp_server : Server
+        The MCP server instance to serve.
+    debug : bool, optional
+        Whether to enable debug mode, by default False.
+
+    Returns
+    -------
+    Starlette
+        A configured Starlette application.
+
+    Examples
+    --------
+    >>> from mcp.server import Server
+    >>> server = Server()
+    >>> app = create_starlette_app(server, debug=True)
+    """
     sse = SseServerTransport("/messages/")
 
     async def handle_sse(request: Request) -> None:
@@ -159,7 +187,7 @@ if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Run MCP SSE-based server')
     parser.add_argument('--host', default='0.0.0.0', help='Host to bind to')
-    parser.add_argument('--port', type=int, default=8080, help='Port to listen on')
+    parser.add_argument('--port', type=int, default=17171, help='Port to listen on')
     args = parser.parse_args()
 
     # Bind SSE request handling to MCP server
