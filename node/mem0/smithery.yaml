@@ -1,0 +1,25 @@
+# Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
+
+startCommand:
+  type: stdio
+  configSchema:
+    # JSON Schema defining the configuration options for the MCP.
+    type: object
+    required:
+      - mem0ApiKey
+    properties:
+      mem0ApiKey:
+        type: string
+        description: Mem0 API key for accessing the Mem0 API
+  commandFunction:
+    # A JS function that produces the CLI command based on the given config to start the MCP on stdio.
+    |-
+    (config) => ({
+      command: 'node',
+      args: ['build/index.js'],
+      env: {
+        MEM0_API_KEY: config.mem0ApiKey
+      }
+    })
+  exampleConfig:
+    mem0ApiKey: YOUR_MEM0_API_KEY_HERE
