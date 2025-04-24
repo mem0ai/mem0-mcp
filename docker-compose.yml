@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "17171:17171"
+      - "${PORT:-8080}:${PORT:-8080}"
     env_file:
       - .env
     restart: always

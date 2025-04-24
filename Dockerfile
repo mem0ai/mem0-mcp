@@ -10,8 +10,11 @@ COPY . .
 # Install uv and project dependencies
 RUN pip install uv && uv pip install --system .
 
+# Set environment variable for the port
+ENV PORT=8080
+
 # Expose the correct port
-EXPOSE 17171
+EXPOSE ${PORT}
 
 # Command to run the MCP server
 CMD ["uv", "run", "main.py", "--port", "17171"]

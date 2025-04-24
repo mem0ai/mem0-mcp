@@ -9,6 +9,7 @@ import uvicorn
 from mem0 import MemoryClient
 from dotenv import load_dotenv
 import json
+import os
 
 load_dotenv()
 
@@ -186,11 +187,12 @@ if __name__ == "__main__":
     import argparse
 
     parser = argparse.ArgumentParser(description='Run MCP SSE-based server')
-    parser.add_argument('--host', default='0.0.0.0', help='Host to bind to')
-    parser.add_argument('--port', type=int, default=17171, help='Port to listen on')
+    parser.add_argument('--host', default=os.getenv("HOST", '0.0.0.0'), help='Host to bind to')
+    parser.add_argument('--port', type=int, default=int(os.getenv("PORT", 8080)), help='Port to listen on')
     args = parser.parse_args()
 
     # Bind SSE request handling to MCP server
     starlette_app = create_starlette_app(mcp_server, debug=True)
 
+    # Use the port from CLI arguments
     uvicorn.run(starlette_app, host=args.host, port=args.port)

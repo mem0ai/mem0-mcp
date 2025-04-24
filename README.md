@@ -30,9 +30,11 @@ Before proceeding, ensure you have created a `.env` file in the root directory w
 
 ```
 MEM0_API_KEY=<your-api-key>
+HOST=<your-host> # Optional, defaults to 0.0.0.0
+PORT=<your-port> # Optional, defaults to 8080
 ```
 
-Replace `<your-api-key>` with your actual API key. This file is required for the application to function correctly.
+Replace `<your-api-key>`, `<your-host>`, and `<your-port>` with your actual values. These variables are required for the application to function correctly, except `HOST` and `PORT`, which have default values.
 
 ## Usage
 
@@ -57,7 +59,7 @@ To run the MCP server with Docker, follow these steps:
 1. Build and start the Docker container using `docker-compose`:
 
 ```bash
-docker compose up --build -d
+docker-compose up --build -d
 ```
 
 This command will build the Docker image and start the container in detached mode.
@@ -73,8 +75,10 @@ You should see the `mem0-server` container listed.
 3. Access the MCP server at the configured endpoint:
 
 ```
-http://0.0.0.0:17171/sse
+http://<your-host>:<your-port>/sse
 ```
+
+Replace `<your-host>` and `<your-port>` with the values you set in the `.env` file.
 
 4. To stop the container, use:
 
