@@ -46,6 +46,40 @@ http://0.0.0.0:8080/sse
 
 3. Open the Composer in Cursor and switch to `Agent` mode.
 
+## Using Docker
+
+To run the MCP server with Docker, follow these steps:
+
+1. Build and start the Docker container using `docker-compose`:
+
+```bash
+docker compose up --build -d
+```
+
+This command will build the Docker image and start the container in detached mode.
+
+2. Verify that the container is running:
+
+```bash
+docker ps
+```
+
+You should see the `mem0-server` container listed.
+
+3. Access the MCP server at the configured endpoint:
+
+```
+http://0.0.0.0:17171/sse
+```
+
+4. To stop the container, use:
+
+```bash
+docker-compose down
+```
+
+This will stop and remove the container.
+
 ## Demo with Cursor
 
 https://github.com/user-attachments/assets/56670550-fb11-4850-9905-692d3496231c
