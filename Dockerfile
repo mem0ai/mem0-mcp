@@ -1,6 +1,5 @@
 # Use the official Python image with version 3.12
 FROM python:3.12-slim
-
 # Set the working directory
 WORKDIR /app
 
@@ -17,4 +16,4 @@ ENV PORT=8080
 EXPOSE ${PORT}
 
 # Command to run the MCP server
-CMD ["uv", "run", "main.py", "--port", "17171"]
+CMD ["uv", "run", "main.py"]
