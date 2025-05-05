@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/mem0ai-mem0-mcp-badge.png)](https://mseep.ai/app/mem0ai-mem0-mcp)
+
 # MCP Server with Mem0 for Managing Coding Preferences
 
 This demonstrates a structured approach for using an [MCP](https://modelcontextprotocol.io/introduction) server with [mem0](https://mem0.ai) to manage coding preferences efficiently. The server can be used with Cursor and provides essential tools for storing, retrieving, and searching coding preferences.
