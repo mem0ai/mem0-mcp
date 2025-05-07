@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+    mem0-mcp:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: mem0-mcp
+        environment:
+            # Các biến môi trường cần thiết
+            - MEM0_API_KEY=${MEM0_API_KEY}
+            # Nếu cung cấp NGROK_AUTHTOKEN, ngrok sẽ tự động tạo tunnel
+            - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+        ports:
+            # Map cổng 8080 để có thể truy cập từ máy chủ
+            - '8080:8080'
+            # Map cổng 4040 để có thể truy cập giao diện ngrok (http://localhost:4040)
+            - '4040:4040'
+        volumes:
+            # Volume để lưu trữ dữ liệu (tùy chọn)
+            - ./data:/app/data
+        restart: unless-stopped
