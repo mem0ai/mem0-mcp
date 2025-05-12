@@ -1,0 +1,8 @@
+# Ignore unnecessary files and directories
+**/__pycache__
+**/*.pyc
+**/*.pyo
+**/.env
+**/.venv
+node_modules
+build

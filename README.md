@@ -24,11 +24,17 @@ source .venv/bin/activate
 uv pip install -e .
 ```
 
-5. Update `.env` file in the root directory with your mem0 API key:
+## Setup
 
-```bash
-MEM0_API_KEY=your_api_key_here
+Before proceeding, ensure you have created a `.env` file in the root directory with the following content:
+
 ```
+MEM0_API_KEY=<your-api-key>
+HOST=<your-host> # Optional, defaults to 0.0.0.0
+PORT=<your-port> # Optional, defaults to 8080
+```
+
+Replace `<your-api-key>`, `<your-host>`, and `<your-port>` with your actual values. These variables are required for the application to function correctly, except `HOST` and `PORT`, which have default values.
 
 ## Usage
 
@@ -45,6 +51,42 @@ http://0.0.0.0:8080/sse
 ```
 
 3. Open the Composer in Cursor and switch to `Agent` mode.
+
+## Using Docker
+
+To run the MCP server with Docker, follow these steps:
+
+1. Build and start the Docker container using `docker-compose`:
+
+```bash
+docker-compose up --build -d
+```
+
+This command will build the Docker image and start the container in detached mode.
+
+2. Verify that the container is running:
+
+```bash
+docker ps
+```
+
+You should see the `mem0-server` container listed.
+
+3. Access the MCP server at the configured endpoint:
+
+```
+http://<your-host>:<your-port>/sse
+```
+
+Replace `<your-host>` and `<your-port>` with the values you set in the `.env` file.
+
+4. To stop the container, use:
+
+```bash
+docker-compose down
+```
+
+This will stop and remove the container.
 
 ## Demo with Cursor
 
