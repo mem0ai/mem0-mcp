@@ -42,7 +42,7 @@ mem0_client.update_project(custom_instructions=CUSTOM_INSTRUCTIONS)
     - Error handling and debugging tips
     The preference will be indexed for semantic search and can be retrieved later using natural language queries."""
 )
-async def add_coding_preference(text: str) -> str:
+async def add_coding_preference( text: str,user_id: str | None = DEFAULT_USER_ID) -> str:
     """Add a new coding preference to mem0.
 
     This tool is designed to store code snippets, implementation patterns, and programming knowledge.
@@ -58,7 +58,7 @@ async def add_coding_preference(text: str) -> str:
     """
     try:
         messages = [{"role": "user", "content": text}]
-        mem0_client.add(messages, user_id=DEFAULT_USER_ID, output_format="v1.1")
+        mem0_client.add(messages, user_id=user_id, output_format="v1.1")
         return f"Successfully added preference: {text}"
     except Exception as e:
         return f"Error adding preference: {str(e)}"
@@ -77,7 +77,7 @@ async def add_coding_preference(text: str) -> str:
     - Setup and configuration guides
     Results are returned in JSON format with metadata."""
 )
-async def get_all_coding_preferences() -> str:
+async def get_all_coding_preferences(user_id: str | None = DEFAULT_USER_ID) -> str:
     """Get all coding preferences for the default user.
 
     Returns a JSON formatted list of all stored preferences, including:
@@ -88,7 +88,7 @@ async def get_all_coding_preferences() -> str:
     Each preference includes metadata about when it was created and its content type.
     """
     try:
-        memories = mem0_client.get_all(user_id=DEFAULT_USER_ID, page=1, page_size=50)
+        memories = mem0_client.get_all(user_id=user_id, page=1, page_size=50)
         flattened_memories = [memory["memory"] for memory in memories["results"]]
         return json.dumps(flattened_memories, indent=2)
     except Exception as e:
@@ -106,7 +106,7 @@ async def get_all_coding_preferences() -> str:
     describe what you're looking for in plain English. Always search the preferences before 
     providing answers to ensure you leverage existing knowledge."""
 )
-async def search_coding_preferences(query: str) -> str:
+async def search_coding_preferences(query: str, user_id: str | None = DEFAULT_USER_ID) -> str:
     """Search coding preferences using semantic search.
 
     The search is powered by natural language understanding, allowing you to find:
@@ -121,7 +121,7 @@ async def search_coding_preferences(query: str) -> str:
               or specific technical terms.
     """
     try:
-        memories = mem0_client.search(query, user_id=DEFAULT_USER_ID, output_format="v1.1")
+        memories = mem0_client.search(query, user_id=user_id, output_format="v1.1")
         flattened_memories = [memory["memory"] for memory in memories["results"]]
         return json.dumps(flattened_memories, indent=2)
     except Exception as e:
