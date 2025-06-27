@@ -16,13 +16,13 @@ A Model Context Protocol (MCP) server that provides memory storage and retrieval
 ### Running with npx
 
 ```bash
-env MEM0_API_KEY=your-api-key-here npx -y @mem0/mcp
+env MEM0_API_KEY=your-api-key-here npx -y @mem0/mcp-server
 ```
 
 ### Manual Installation
 
 ```bash
-npm install -g @mem0/mcp
+npm install -g @mem0/mcp-server
 ```
 
 ## Configuration for AI Tools
@@ -39,7 +39,7 @@ To configure Mem0 MCP in Cursor:
 4. Enter the following:
    - Name: "mem0-mcp" (or your preferred name)
    - Type: "command"
-   - Command: `env MEM0_API_KEY=your-api-key-here npx -y @mem0/mcp`
+   - Command: `env MEM0_API_KEY=your-api-key-here npx -y @mem0/mcp-server`
 
 To configure Mem0 MCP using JSON configuration:
 
@@ -48,7 +48,7 @@ To configure Mem0 MCP using JSON configuration:
   "mcpServers": {
     "mem0-mcp": {
       "command": "npx",
-      "args": ["-y", "@mem0/mcp"],
+      "args": ["-y", "@mem0/mcp-server"],
       "env": {
         "MEM0_API_KEY": "YOUR-API-KEY-HERE"
       }
@@ -75,7 +75,7 @@ Add the following JSON block to your User Settings (JSON) file in VS Code:
     "servers": {
       "mem0-memory": {
         "command": "npx",
-        "args": ["-y", "@mem0/mcp"],
+        "args": ["-y", "@mem0/mcp-server"],
         "env": {
           "MEM0_API_KEY": "${input:apiKey}"
         }

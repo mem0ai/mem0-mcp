@@ -4,7 +4,7 @@
   "main": "index.js",
   "type": "module",
   "bin": {
-    "mem0-mcp": "dist/index.js"
+    "mem0-mcp-server": "dist/index.js"
   },
   "scripts": {
     "build": "tsup",
