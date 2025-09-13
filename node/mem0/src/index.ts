@@ -21,7 +21,7 @@ const memoryClient = new MemoryClient({ apiKey: MEM0_API_KEY });
 const ADD_MEMORY_TOOL: Tool = {
   name: 'add-memory',
   description:
-    'Add a new memory. This method is called everytime the user informs anything about themselves, their preferences, or anything that has any relevent information whcih can be useful in the future conversation. This can also be called when the user asks you to remember something.',
+    'Add a new memory. This method is called everytime the user informs anything about themselves, their preferences, or anything that has any relevent information which can be useful in the future conversation. This can also be called when the user asks you to remember something.',
   inputSchema: {
     type: 'object',
     properties: {
