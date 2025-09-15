@@ -10,7 +10,6 @@ dotenv.config();
 export const configSchema = z.object({
   mem0ApiKey: z
     .string()
-    .optional()
     .describe('Mem0 API key. Defaults to MEM0_API_KEY env var if not provided.'),
   defaultUserId: z
     .string()
