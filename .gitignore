@@ -1,0 +1,48 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+mem0_mcp.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment variables
+.env
+
+# Mac OS specific files
+.DS_Store
+
+# Editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python version file
+.python-version
+
+# Cache and logs
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+logs/
+*.log
+
+# Dependency files
+uv.lock
+
+# Temporary files
+tmp/
+temp/ 
