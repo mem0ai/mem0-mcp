@@ -48,6 +48,7 @@ Documentation = "https://docs.mem0.ai"
 
 [project.optional-dependencies]
 smithery = ["smithery>=0.4.2"]
+agent = ["pydantic-ai-slim[mcp]>=1.14.1", "python-dotenv>=1.2.1"]
 
 [dependency-groups]
 dev = [

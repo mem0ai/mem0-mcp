@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "mem0-local": {
-      "command": "${MEM0_MCP_COMMAND:-python}",
-      "args": ["-m", "mem0_mcp_server.server"],
+    "mem0-docker": {
+      "command": "mem0-mcp-server",
+      "args": ["--stdio"],
       "env": {
         "MEM0_API_KEY": "${MEM0_API_KEY}",
         "MEM0_DEFAULT_USER_ID": "${MEM0_DEFAULT_USER_ID:-mem0-mcp}"

@@ -1,0 +1,22 @@
+{
+  "mcpServers": {
+    "mem0-memory-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@smithery/cli@latest",
+        "run",
+        "@mem0ai/mem0-memory-mcp",
+        "--key",
+        "your-smithery-key-here",
+        "--profile",
+        "your-profile-name-here"
+      ],
+      "env": {
+        "MEM0_API_KEY": "${MEM0_API_KEY}",
+        "MEM0_DEFAULT_USER_ID": "${MEM0_DEFAULT_USER_ID:-mem0-mcp}"
+      },
+      "timeout": "${MEM0_MCP_SERVER_TIMEOUT:-30}"
+    }
+  }
+}

@@ -18,7 +18,7 @@ startCommand:
         description: "Enable graph memory by default"
         default: false
   exampleConfig:
-    mem0_api_key: "sk_mem0_12345"
+    mem0_api_key: "your-mem0-api-key-here"
     default_user_id: "pepsico-logistics-agent"
     enable_graph_default: false
 
