@@ -1,6 +1,6 @@
 # Mem0 MCP Server
 
-[![PyPI version](https://img.shields.io/pypi/v/mem0-mcp-server.svg)](https://pypi.org/project/mem0-mcp-server/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![smithery badge](https://smithery.ai/badge/@mem0ai/mem0-memory-mcp)](https://smithery.ai/server/@mem0ai/mem0-memory-mcp) [![PyPI version](https://img.shields.io/pypi/v/mem0-mcp-server.svg)](https://pypi.org/project/mem0-mcp-server/) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 `mem0-mcp-server` wraps the official [Mem0](https://mem0.ai) Memory API as a Model Context Protocol (MCP) server so any MCP-compatible client (Claude Desktop, Cursor, custom agents) can add, search, update, and delete long-term memories.
 
@@ -14,7 +14,7 @@ The server exposes the following tools to your LLM:
 | `search_memories`     | Semantic search across existing memories (filters + limit supported).             |
 | `get_memories`        | List memories with structured filters and pagination.                             |
 | `get_memory`          | Retrieve one memory by its `memory_id`.                                           |
-| `update_memory`       | Overwrite a memory’s text once the user confirms the `memory_id`.                 |
+| `update_memory`       | Overwrite a memory's text once the user confirms the `memory_id`.                 |
 | `delete_memory`       | Delete a single memory by `memory_id`.                                            |
 | `delete_all_memories` | Bulk delete all memories in the confirmed scope (user/agent/app/run).             |
 | `delete_entities`     | Delete a user/agent/app/run entity (and its memories).                            |
