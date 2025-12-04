@@ -211,8 +211,4 @@ uv run mem0-mcp-server
 
 ## License
 
-Apache License 2.0
-
-```
-
-```
+[Apache License 2.0](https://github.com/mem0ai/mem0-mcp/blob/main/LICENSE)
