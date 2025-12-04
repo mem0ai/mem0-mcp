@@ -2,7 +2,7 @@
   "mcpServers": {
     "mem0-docker": {
       "type": "http",
-      "url": "http://localhost:8081/mcp"
+      "url": "http://localhost:8080/mcp"
     }
   }
 }
