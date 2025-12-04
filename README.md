@@ -65,6 +65,9 @@ Add this configuration to your MCP client:
 
 ### Test with the Python Agent
 
+<details>
+<summary><strong>Click to expand: Test with the Python Agent</strong></summary>
+
 To test the server immediately, use the included Pydantic AI agent:
 
 ```bash
@@ -89,22 +92,24 @@ export MEM0_MCP_CONFIG_PATH=example/docker-config.json
 export MEM0_MCP_CONFIG_SERVER=mem0-docker
 python example/pydantic_ai_repl.py
 
-# Use with Smithery
+# Use with Smithery remote server
 export MEM0_MCP_CONFIG_PATH=example/config-smithery.json
 export MEM0_MCP_CONFIG_SERVER=mem0-memory-mcp
 python example/pydantic_ai_repl.py
 ```
 
+</details>
+
 ## What You Can Do
 
 The Mem0 MCP server enables powerful memory capabilities for your AI applications:
 
-- **"Remember that I'm allergic to peanuts and shellfish"** → Add new health information to memory
-- **"Store these trial parameters: 200 participants, double-blind, placebo-controlled study"** → Save research data
-- **"What do you know about my dietary preferences?"** → Search and retrieve all food-related memories
-- **"Update my project status: the mobile app is now 80% complete"** → Modify existing memory with new info
-- **"Delete all memories from 2023, I need a fresh start"** → Bulk remove outdated memories
-- **"Show me everything I've saved about the Phoenix project"** → List all memories for a specific topic
+- Remember that I'm allergic to peanuts and shellfish - Add new health information to memory
+- Store these trial parameters: 200 participants, double-blind, placebo-controlled study - Save research data
+- What do you know about my dietary preferences? - Search and retrieve all food-related memories
+- Update my project status: the mobile app is now 80% complete - Modify existing memory with new info
+- Delete all memories from 2023, I need a fresh start - Bulk remove outdated memories
+- Show me everything I've saved about the Phoenix project - List all memories for a specific topic
 
 ## Configuration
 
@@ -149,9 +154,9 @@ To run with Docker:
    docker ps
    ```
 
-### Smithery Deployment
+### Running with Smithery Remote Server
 
-To deploy on Smithery platform:
+To connect to a Smithery-hosted server:
 
 1. Install with Smithery support:
 
