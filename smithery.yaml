@@ -1,0 +1,27 @@
+runtime: "container"
+
+startCommand:
+  type: "http"
+  configSchema:
+    type: "object"
+    required: ["mem0_api_key"]
+    properties:
+      mem0_api_key:
+        type: "string"
+        description: "Mem0 API Key"
+      default_user_id:
+        type: "string"
+        description: "Default User ID for memory storage (e.g. user_123 or agent_name)"
+        default: "mem0-mcp"
+      enable_graph_default:
+        type: "boolean"
+        description: "Enable graph memory by default"
+        default: false
+  exampleConfig:
+    mem0_api_key: "sk_mem0_12345"
+    default_user_id: "pepsico-logistics-agent"
+    enable_graph_default: false
+
+build:
+  dockerfile: "Dockerfile"
+  dockerBuildPath: "."

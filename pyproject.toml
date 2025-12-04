@@ -1,11 +1,82 @@
+[build-system]
+requires = ["hatchling>=1.27.0"]
+build-backend = "hatchling.build"
+
 [project]
-name = "mem0-mcp"
+name = "mem0-mcp-server"
 version = "0.1.0"
-description = "Add your description here"
+description = "Model Context Protocol server that exposes the Mem0 long-term memory API as tools"
 readme = "README.md"
-requires-python = ">=3.12"
-dependencies = [
-    "httpx>=0.28.1",
-    "mcp[cli]>=1.3.0",
-    "mem0ai>=0.1.55",
+license = {text = "MIT"}
+authors = [{name = "Mem0"}]
+requires-python = ">=3.10"
+keywords = [
+    "mcp",
+    "mem0",
+    "memory",
+    "agents",
+    "tooling",
+    "llm",
+    "anthropic",
+    "claude",
 ]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Topic :: Software Development :: Libraries",
+    "Typing :: Typed",
+]
+
+dependencies = [
+    "mcp[cli]>=1.6.0",
+    "mem0ai>=1.0.1",
+    "python-dotenv>=1.2.1",
+    "requests>=2.32.5",
+    "pydantic-ai-slim[mcp]>=1.14.1",
+]
+
+[project.urls]
+Homepage = "https://mem0.ai"
+Repository = "https://github.com/mem0-ai/mem0-mcp-server"
+Documentation = "https://docs.mem0.ai"
+
+[project.optional-dependencies]
+smithery = ["smithery>=0.4.2"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.4",
+    "ruff>=0.7.0",
+    "mypy>=1.18.2",
+]
+
+[project.scripts]
+mem0-mcp-server = "mem0_mcp_server.server:main"
+
+[project.entry-points."mcp.servers"]
+mem0 = "mem0_mcp_server:mcp.json"
+
+[tool.smithery]
+server = "mem0_mcp_server.server:create_server"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mem0_mcp_server"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"src/mem0_mcp_server/mcp.json" = "share/mcp/servers/mem0-mcp-server.json"
+"src/mem0_mcp_server/py.typed" = "mem0_mcp_server/py.typed"
+"src/mem0_mcp_server/config.json" = "share/mcp/configs/mem0-mcp-server.json"
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.mypy]
+python_version = "3.10"
+strict = true

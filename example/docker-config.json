@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mem0-docker": {
+      "type": "http",
+      "url": "http://localhost:8081/mcp"
+    }
+  }
+}

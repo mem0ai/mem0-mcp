@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "mem0": {
+      "command": "${MEM0_MCP_COMMAND:-uvx}",
+      "args": ["${MEM0_MCP_BINARY:-mem0-mcp-server}"],
+      "env": {
+        "MEM0_API_KEY": "${MEM0_API_KEY}",
+        "MEM0_DEFAULT_USER_ID": "${MEM0_DEFAULT_USER_ID:-mem0-mcp}"
+      }
+    }
+  }
+}
