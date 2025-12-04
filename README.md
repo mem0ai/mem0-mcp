@@ -22,27 +22,38 @@ The server exposes the following tools to your LLM:
 
 All responses are JSON strings returned directly from the Mem0 API.
 
-## Installation
+## Usage Options
 
-### Install from PyPI (Recommended)
+There are three ways to use the Mem0 MCP Server:
+
+1. **Python Package** - Install and run locally using `uvx` with any MCP client
+2. **Docker** - Containerized deployment that creates an `/mcp` HTTP endpoint
+3. **Smithery** - Remote hosted service for managed deployments
+
+## Quick Start
+
+### Installation
+
+```bash
+uv pip install mem0-mcp-server
+```
+
+Or with pip:
 
 ```bash
 pip install mem0-mcp-server
 ```
 
-This installs the command-line tool `mem0-mcp-server` that you can use with any MCP client.
+### Client Configuration
 
-## Quick Start
-
-### Claude Desktop & Cursor
-
-The easiest way to use Mem0 is by adding this configuration to your `claude_desktop_config.json` or Cursor MCP settings:
+Add this configuration to your MCP client:
 
 ```json
 {
   "mcpServers": {
     "mem0": {
-      "command": "mem0-mcp-server",
+      "command": "uvx",
+      "args": ["mem0-mcp-server"],
       "env": {
         "MEM0_API_KEY": "sk_mem0_...",
         "MEM0_DEFAULT_USER_ID": "your-handle"
@@ -52,83 +63,48 @@ The easiest way to use Mem0 is by adding this configuration to your `claude_desk
 }
 ```
 
-### Command Line Usage
+### Test with the Python Agent
+
+To test the server immediately, use the included Pydantic AI agent:
 
 ```bash
-# Set your API key
-export MEM0_API_KEY="sk_mem0_..."
+# Install with agent support
+pip install "mem0-mcp-server[agent]"
 
-# Run the server
-mem0-mcp-server
-```
-
-### Python Agent Example
-
-Try the interactive Pydantic AI agent to test the server:
-
-```bash
-# Clone the repository
-git clone https://github.com/mem0ai/mem0-mcp-server.git
-cd mem0-mcp-server
-
-# Install with agent dependencies
-pip install -e ".[agent]"
-
-# Set required environment variables
+# Set your API keys
 export MEM0_API_KEY="sk_mem0_..."
 export OPENAI_API_KEY="sk-openai-..."
 
-# Run the agent
+# Clone and test with the agent
+git clone https://github.com/mem0ai/mem0-mcp-server.git
+cd mem0-mcp-server
 python example/pydantic_ai_repl.py
 ```
 
-This launches "Mem0Guide". Try prompts like:
-- "Remember that I love pepperoni pizza"
-- "What do you know about my food preferences?"
-- "Search for memories about my projects"
-
-**Using with different configurations:**
+**Using different server configurations:**
 
 ```bash
-# Use local server (default)
+# Use with Docker container
+export MEM0_MCP_CONFIG_PATH=example/docker-config.json
+export MEM0_MCP_CONFIG_SERVER=mem0-docker
 python example/pydantic_ai_repl.py
 
-# Use Smithery server
+# Use with Smithery
 export MEM0_MCP_CONFIG_PATH=example/config-smithery.json
 export MEM0_MCP_CONFIG_SERVER=mem0-memory-mcp
 python example/pydantic_ai_repl.py
-
-# Use Docker server
-export MEM0_MCP_CONFIG_PATH=example/config-docker.json
-export MEM0_MCP_CONFIG_SERVER=mem0-docker
-python example/pydantic_ai_repl.py
 ```
 
-## Filter Guidelines
+## What You Can Do
 
-Mem0 filters use JSON with logical operators. Key rules:
+The Mem0 MCP server enables powerful memory capabilities for your AI applications:
 
-- **Don't mix entities in AND**: `{"AND": [{"user_id": "john"}, {"agent_id": "bot"}]}` is invalid
-- **Use OR for different entities**: `{"OR": [{"user_id": "john"}, {"agent_id": "bot"}]}` works
-- **Default user_id**: Added automatically if not specified
-
-### Quick Examples
-```json
-// Single user
-{"AND": [{"user_id": "john"}]}
-
-// Agent memories only
-{"AND": [{"agent_id": "schedule_bot"}]}
-
-// Multiple users
-{"AND": [{"user_id": {"in": ["john", "jane"]}}]}
-
-// Cross-entity search
-{"OR": [{"user_id": "john"}, {"agent_id": "bot"}]}
-
-// Recent memories
-{"AND": [{"user_id": "john"}, {"created_at": {"gte": "2024-01-01"}}]}
-```
+- **"Remember that I'm allergic to peanuts and shellfish"** → Add new health information to memory
+- **"Store these trial parameters: 200 participants, double-blind, placebo-controlled study"** → Save research data
+- **"What do you know about my dietary preferences?"** → Search and retrieve all food-related memories
+- **"Update my project status: the mobile app is now 80% complete"** → Modify existing memory with new info
+- **"Delete all memories from 2023, I need a fresh start"** → Bulk remove outdated memories
+- **"Show me everything I've saved about the Phoenix project"** → List all memories for a specific topic
 
 ## Configuration
 
@@ -141,13 +117,44 @@ Mem0 filters use JSON with logical operators. Key rules:
 ## Advanced Setup
 
 <details>
-<summary><strong>Click to expand: Smithery, Docker, and Development</strong></summary>
+<summary><strong>Click to expand: Docker, Smithery, and Development</strong></summary>
+
+### Docker Deployment
+
+To run with Docker:
+
+1. Build the image:
+
+   ```bash
+   docker build -t mem0-mcp-server .
+   ```
+
+2. Run the container:
+
+   ```bash
+   docker run --rm -d \
+     --name mem0-mcp \
+     -e MEM0_API_KEY=sk_mem0_... \
+     -p 8080:8081 \
+     mem0-mcp-server
+   ```
+
+3. Monitor the container:
+
+   ```bash
+   # View logs
+   docker logs -f mem0-mcp
+
+   # Check status
+   docker ps
+   ```
 
 ### Smithery Deployment
 
 To deploy on Smithery platform:
 
 1. Install with Smithery support:
+
    ```bash
    pip install "mem0-mcp-server[smithery]"
    ```
@@ -159,10 +166,14 @@ To deploy on Smithery platform:
        "mem0-memory-mcp": {
          "command": "npx",
          "args": [
-           "-y", "@smithery/cli@latest",
-           "run", "@mem0ai/mem0-memory-mcp",
-           "--key", "your-smithery-key",
-           "--profile", "your-profile-name"
+           "-y",
+           "@smithery/cli@latest",
+           "run",
+           "@mem0ai/mem0-memory-mcp",
+           "--key",
+           "your-smithery-key",
+           "--profile",
+           "your-profile-name"
          ],
          "env": {
            "MEM0_API_KEY": "sk_mem0_..."
@@ -172,26 +183,12 @@ To deploy on Smithery platform:
    }
    ```
 
-### Docker Deployment
-
-To run with Docker:
-
-1. Build the image:
-   ```bash
-   docker build -t mem0-mcp-server .
-   ```
-
-2. Run the container:
-   ```bash
-   docker run --rm -e MEM0_API_KEY=sk_mem0_... -p 8081:8081 mem0-mcp-server
-   ```
-
 ### Development Setup
 
 Clone and run from source:
 
 ```bash
-git clone https://github.com/mem0-ai/mem0-mcp-server.git
+git clone https://github.com/mem0ai/mem0-mcp-server.git
 cd mem0-mcp-server
 pip install -e ".[dev]"
 
@@ -208,3 +205,7 @@ uv run mem0-mcp-server
 ## License
 
 Apache License 2.0
+
+```
+
+```
