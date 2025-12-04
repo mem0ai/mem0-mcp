@@ -71,8 +71,10 @@ Add this configuration to your MCP client:
 To test the server immediately, use the included Pydantic AI agent:
 
 ```bash
-# Install with agent support
-pip install "mem0-mcp-server[agent]"
+# Install the package
+pip install mem0-mcp-server
+# Or with uv
+uv pip install mem0-mcp-server
 
 # Set your API keys
 export MEM0_API_KEY="sk_mem0_..."
