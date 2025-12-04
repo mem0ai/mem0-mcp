@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "mem0-local": {
+      "command": "${MEM0_MCP_COMMAND:-python}",
+      "args": ["-m", "mem0_mcp_server.server"],
+      "env": {
+        "MEM0_API_KEY": "${MEM0_API_KEY}",
+        "MEM0_DEFAULT_USER_ID": "${MEM0_DEFAULT_USER_ID:-mem0-mcp}"
+      },
+      "timeout": "${MEM0_MCP_SERVER_TIMEOUT:-30}"
+    }
+  }
+}
