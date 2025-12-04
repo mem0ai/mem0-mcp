@@ -1,65 +1,71 @@
 # Pydantic AI Demo
 
-This directory lets you run the Mem0 MCP server end-to-end with the bundled
-Pydantic AI agent without touching `uvx` or Smithery.
+This directory contains a Pydantic AI agent to interactively test the Mem0 MCP server.
 
-## Requirements
+## Quick Start
 
 ```bash
-pip install -e ".[smithery]"   # or uv pip install -e ".[smithery]"
+# Install the package
+pip install mem0-mcp-server
+# Or with uv
+uv pip install mem0-mcp-server
+
+# Set your API keys
 export MEM0_API_KEY="sk_mem0_..."
 export OPENAI_API_KEY="sk-openai_..."
+
+# Run the REPL
+python example/pydantic_ai_repl.py
 ```
 
-## Run the REPL
+## Using Different Server Configurations
 
+### Local Server (default)
 ```bash
 python example/pydantic_ai_repl.py
 ```
 
-What happens:
+### Docker Container
+```bash
+# Start Docker container
+docker run --rm -d \
+  --name mem0-mcp \
+  -e MEM0_API_KEY="sk_mem0_..." \
+  -p 8080:8081 \
+  mem0-mcp-server
 
-1. The script loads `example/config.json`, which points to your local
-   `mem0_mcp_server.server` module (`python -m mem0_mcp_server.server`).
-2. The Mem0 MCP server starts over stdio with whatever env vars you exported.
-3. A Pydantic AI agent (Mem0Guide) connects to that server and drops you into a
-   REPL. Type prompts like “remember that I love tiramisu” or “search memories
-   for tiramisu” to exercise the tools.
+# Run agent pointing to Docker
+export MEM0_MCP_CONFIG_PATH=example/docker-config.json
+export MEM0_MCP_CONFIG_SERVER=mem0-docker
+python example/pydantic_ai_repl.py
+```
 
-### Custom configs
+### Smithery Remote Server
+```bash
+export MEM0_MCP_CONFIG_PATH=example/config-smithery.json
+export MEM0_MCP_CONFIG_SERVER=mem0-memory-mcp
+python example/pydantic_ai_repl.py
+```
 
-- Set `MEM0_MCP_CONFIG_PATH=/path/to/another/config.json` to point the agent to
-  a different MCP endpoint (e.g., your Smithery deployment or Docker container).
-- Use `MEM0_MCP_CONFIG_SERVER` if the config file defines multiple servers.
+## What Happens
 
-This flow mirrors the original bundled script but lives entirely in this
-`example/` directory with ready-to-use config so the REPL “just works” for local
-testing.
+1. The script loads the configuration from `example/config.json` by default
+2. Starts or connects to the Mem0 MCP server
+3. A Pydantic AI agent (Mem0Guide) connects to the server
+4. You get an interactive REPL to test memory operations
 
-## Configuring Other Transports
+## Example Prompts
 
-The two config files in this folder cover the most common setups:
+- "Remember that I love tiramisu"
+- "Search for my food preferences"
+- "Update my project: the mobile app is now 80% complete"
+- "Show me all memories about project Phoenix"
+- "Delete memories from 2023"
 
-- `config.json` – launches your local checkout via stdio (`python -m mem0_mcp_server.server`).
-- `docker-config.json` – points at an HTTP server on `http://localhost:8081/mcp` (e.g., the Docker container).
+## Config Files
 
-You can copy either file and tweak the `command`/`args` or `type`/`url` fields
-to match other environments—or reuse them directly in other MCP clients (Claude,
-Cursor, custom apps). The Pydantic REPL is just a convenient example of how any
-client would connect once it has the right config.
+- `config.json` - Local server (default)
+- `docker-config.json` - Connect to Docker container on port 8080
+- `config-smithery.json` - Connect to Smithery remote server
 
-- **Local stdio (default)** – runs `python -m mem0_mcp_server.server`. No edits
-  needed; the REPL launches the server from your working tree.
-- **uvx / published package** – change `command` to `"uvx"` and `args` to
-  `["mem0-mcp-server"]` if you want to test the installed CLI instead of your
-  repo checkout.
-- **Docker / hosted HTTP** – expose the container on `http://localhost:8081/mcp`
-  (or your host URL) and create a config that uses Pydantic’s HTTP transport,
-  e.g. `example/docker-config.json`. Set `MEM0_MCP_CONFIG_PATH` to that file
-  before running the REPL.
-- **Smithery-hosted HTTP** – once deployed, copy the Smithery URL
-  (`https://server.smithery.ai/.../mcp`) into the same HTTP config shape above
-  so the REPL talks to the hosted server instead of starting a local process.
-
-In all cases you can select the desired server definition with
-`MEM0_MCP_CONFIG_SERVER` if your config file contains multiple entries.
+You can create custom configs by copying and modifying these files.
