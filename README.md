@@ -160,10 +160,10 @@ To run with Docker:
 
 To connect to a Smithery-hosted server:
 
-1. Install with Smithery support:
+1. Install the MCP server (Smithery dependencies are now bundled):
 
    ```bash
-   pip install "mem0-mcp-server[smithery]"
+   pip install mem0-mcp-server
    ```
 
 2. Configure MCP client with Smithery:
