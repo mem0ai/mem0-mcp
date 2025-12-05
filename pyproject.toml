@@ -39,6 +39,7 @@ dependencies = [
     "python-dotenv>=1.2.1",
     "requests>=2.32.5",
     "pydantic-ai-slim[mcp]>=1.14.1",
+    "smithery>=0.4.2",
 ]
 
 [project.urls]
@@ -47,7 +48,6 @@ Repository = "https://github.com/mem0-ai/mem0-mcp-server"
 Documentation = "https://docs.mem0.ai"
 
 [project.optional-dependencies]
-smithery = ["smithery>=0.4.2"]
 agent = ["pydantic-ai-slim[mcp]>=1.14.1", "python-dotenv>=1.2.1"]
 
 [dependency-groups]
@@ -59,6 +59,9 @@ dev = [
 
 [project.scripts]
 mem0-mcp-server = "mem0_mcp_server.server:main"
+dev = "smithery.cli.dev:main"
+start = "smithery.cli.start:main"
+playground = "smithery.cli.playground:main"
 
 [project.entry-points."mcp.servers"]
 mem0 = "mem0_mcp_server:mcp.json"

@@ -16,7 +16,7 @@ class ToolMessage(BaseModel):
 class ConfigSchema(BaseModel):
     """Session-level overrides used when hosting via Smithery or HTTP."""
 
-    mem0_api_key: Optional[str] = Field(None, description="Mem0 API key overriding env vars.")
+    mem0_api_key: str = Field(..., description="Mem0 API key (required)")
     default_user_id: Optional[str] = Field(
         None, description="Default user_id injected into filters when unspecified."
     )
