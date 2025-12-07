@@ -44,7 +44,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://mem0.ai"
-Repository = "https://github.com/mem0ai/mem0-mcp-server"
+Repository = "https://github.com/mem0ai/mem0-mcp"
 Documentation = "https://docs.mem0.ai"
 
 [project.optional-dependencies]

@@ -81,7 +81,7 @@ export MEM0_API_KEY="m0-..."
 export OPENAI_API_KEY="sk-openai-..."
 
 # Clone and test with the agent
-git clone https://github.com/mem0ai/mem0-mcp-server.git
+git clone https://github.com/mem0ai/mem0-mcp.git
 cd mem0-mcp-server
 python example/pydantic_ai_repl.py
 ```
@@ -196,7 +196,7 @@ To connect to a Smithery-hosted server:
 Clone and run from source:
 
 ```bash
-git clone https://github.com/mem0ai/mem0-mcp-server.git
+git clone https://github.com/mem0ai/mem0-mcp.git
 cd mem0-mcp-server
 pip install -e ".[dev]"
 
@@ -212,4 +212,4 @@ uv run mem0-mcp-server
 
 ## License
 
-[Apache License 2.0](https://github.com/mem0ai/mem0-mcp-server/blob/main/LICENSE)
+[Apache License 2.0](https://github.com/mem0ai/mem0-mcp/blob/main/LICENSE)
