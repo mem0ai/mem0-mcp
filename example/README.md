@@ -11,7 +11,7 @@ pip install mem0-mcp-server
 uv pip install mem0-mcp-server
 
 # Set your API keys
-export MEM0_API_KEY="sk_mem0_..."
+export MEM0_API_KEY="m0-..."
 export OPENAI_API_KEY="sk-openai_..."
 
 # Run the REPL
@@ -30,7 +30,7 @@ python example/pydantic_ai_repl.py
 # Start Docker container
 docker run --rm -d \
   --name mem0-mcp \
-  -e MEM0_API_KEY="sk_mem0_..." \
+  -e MEM0_API_KEY="m0-..." \
   -p 8080:8081 \
   mem0-mcp-server
 

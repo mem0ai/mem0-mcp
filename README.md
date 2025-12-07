@@ -55,7 +55,7 @@ Add this configuration to your MCP client:
       "command": "uvx",
       "args": ["mem0-mcp-server"],
       "env": {
-        "MEM0_API_KEY": "sk_mem0_...",
+        "MEM0_API_KEY": "m0-...",
         "MEM0_DEFAULT_USER_ID": "your-handle"
       }
     }
@@ -77,11 +77,11 @@ pip install mem0-mcp-server
 uv pip install mem0-mcp-server
 
 # Set your API keys
-export MEM0_API_KEY="sk_mem0_..."
+export MEM0_API_KEY="m0-..."
 export OPENAI_API_KEY="sk-openai-..."
 
 # Clone and test with the agent
-git clone https://github.com/mem0ai/mem0-mcp-server.git
+git clone https://github.com/mem0ai/mem0-mcp.git
 cd mem0-mcp-server
 python example/pydantic_ai_repl.py
 ```
@@ -119,6 +119,7 @@ The Mem0 MCP server enables powerful memory capabilities for your AI application
 
 - `MEM0_API_KEY` (required) – Mem0 platform API key.
 - `MEM0_DEFAULT_USER_ID` (optional) – default `user_id` injected into filters and write requests (defaults to `mem0-mcp`).
+- `MEM0_ENABLE_GRAPH_DEFAULT` (optional) – Enable graph memories by default (defaults to `false`).
 - `MEM0_MCP_AGENT_MODEL` (optional) – default LLM for the bundled agent example (defaults to `openai:gpt-4o-mini`).
 
 ## Advanced Setup
@@ -141,7 +142,7 @@ To run with Docker:
    ```bash
    docker run --rm -d \
      --name mem0-mcp \
-     -e MEM0_API_KEY=sk_mem0_... \
+     -e MEM0_API_KEY=m0-... \
      -p 8080:8081 \
      mem0-mcp-server
    ```
@@ -183,7 +184,7 @@ To connect to a Smithery-hosted server:
            "your-profile-name"
          ],
          "env": {
-           "MEM0_API_KEY": "sk_mem0_..."
+           "MEM0_API_KEY": "m0-..."
          }
        }
      }
@@ -195,7 +196,7 @@ To connect to a Smithery-hosted server:
 Clone and run from source:
 
 ```bash
-git clone https://github.com/mem0ai/mem0-mcp-server.git
+git clone https://github.com/mem0ai/mem0-mcp.git
 cd mem0-mcp-server
 pip install -e ".[dev]"
 

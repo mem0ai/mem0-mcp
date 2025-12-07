@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mem0-mcp-server"
-version = "0.2.0"
+version = "0.2.1"
 description = "Model Context Protocol server that exposes the Mem0 long-term memory API as tools"
 readme = "README.md"
 license = {text = "Apache-2.0"}
@@ -44,7 +44,7 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://mem0.ai"
-Repository = "https://github.com/mem0-ai/mem0-mcp-server"
+Repository = "https://github.com/mem0ai/mem0-mcp"
 Documentation = "https://docs.mem0.ai"
 
 [project.optional-dependencies]
