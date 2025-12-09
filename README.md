@@ -48,6 +48,8 @@ pip install mem0-mcp-server
 
 Add this configuration to your MCP client:
 
+**Option 1: Using environment variables (recommended)**
+
 ```json
 {
   "mcpServers": {
@@ -58,6 +60,23 @@ Add this configuration to your MCP client:
         "MEM0_API_KEY": "m0-...",
         "MEM0_DEFAULT_USER_ID": "your-handle"
       }
+    }
+  }
+}
+```
+
+**Option 2: Using command-line arguments (for CLIs that don't support env)**
+
+```json
+{
+  "mcpServers": {
+    "mem0": {
+      "command": "uvx",
+      "args": [
+        "mem0-mcp-server",
+        "--api-key=m0-...",
+        "--user-id=your-handle"
+      ]
     }
   }
 }
@@ -117,11 +136,18 @@ The Mem0 MCP server enables powerful memory capabilities for your AI application
 
 ### Environment Variables
 
-- `MEM0_API_KEY` (required) – Mem0 platform API key.
+- `MEM0_API_KEY` (required if not using `--api-key`) – Mem0 platform API key.
 - `MEM0_DEFAULT_USER_ID` (optional) – default `user_id` injected into filters and write requests (defaults to `mem0-mcp`).
 - `MEM0_ENABLE_GRAPH_DEFAULT` (optional) – Enable graph memories by default (defaults to `false`).
 - `MEM0_DISABLE_DNS_REBINDING_PROTECTION` (optional) – Disable DNS rebinding protection for local development (defaults to `false`, protection enabled).
 - `MEM0_MCP_AGENT_MODEL` (optional) – default LLM for the bundled agent example (defaults to `openai:gpt-4o-mini`).
+
+### Command-Line Arguments
+
+- `--api-key` – Mem0 API key (overrides `MEM0_API_KEY` env var)
+- `--user-id` – Default user ID (overrides `MEM0_DEFAULT_USER_ID` env var)
+
+CLI arguments take precedence over environment variables.
 
 ## Advanced Setup
 

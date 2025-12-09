@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import logging
 import os
@@ -50,6 +51,10 @@ except ImportError:  # pragma: no cover - Smithery optional
 
     smithery = _SmitheryFallback()  # type: ignore[assignment]
 
+
+# CLI arguments override environment variables
+_CLI_API_KEY: Optional[str] = None
+_CLI_DEFAULT_USER_ID: Optional[str] = None
 
 # graph remains off by default , also set the default user_id to "mem0-mcp" when nothing set
 ENV_API_KEY = os.getenv("MEM0_API_KEY")
@@ -131,13 +136,13 @@ def _mem0_call(func, *args, **kwargs):
 
 def _resolve_settings(ctx: Context | None) -> tuple[str, str, bool]:
     session_config = getattr(ctx, "session_config", None)
-    api_key = _config_value(session_config, "mem0_api_key") or ENV_API_KEY
+    api_key = _CLI_API_KEY or _config_value(session_config, "mem0_api_key") or ENV_API_KEY
     if not api_key:
         raise RuntimeError(
-            "MEM0_API_KEY is required (via Smithery config, session config, or environment) to run the Mem0 MCP server."
+            "MEM0_API_KEY is required (via CLI args, Smithery config, session config, or environment) to run the Mem0 MCP server."
         )
 
-    default_user = _config_value(session_config, "default_user_id") or ENV_DEFAULT_USER_ID
+    default_user = _CLI_DEFAULT_USER_ID or _config_value(session_config, "default_user_id") or ENV_DEFAULT_USER_ID
     enable_graph_default = _config_value(session_config, "enable_graph_default")
     if enable_graph_default is None:
         enable_graph_default = ENV_ENABLE_GRAPH_DEFAULT
@@ -484,9 +489,21 @@ Tips:
 
 def main() -> None:
     """Run the MCP server over stdio."""
+    global _CLI_API_KEY, _CLI_DEFAULT_USER_ID
+    
+    parser = argparse.ArgumentParser(description="Mem0 MCP Server")
+    parser.add_argument("--api-key", help="Mem0 API key (overrides MEM0_API_KEY env var)")
+    parser.add_argument("--user-id", help="Default user ID (overrides MEM0_DEFAULT_USER_ID env var)")
+    
+    args = parser.parse_args()
+    
+    if args.api_key:
+        _CLI_API_KEY = args.api_key
+    if args.user_id:
+        _CLI_DEFAULT_USER_ID = args.user_id
 
     server = create_server()
-    logger.info("Starting Mem0 MCP server (default user=%s)", ENV_DEFAULT_USER_ID)
+    logger.info("Starting Mem0 MCP server (default user=%s)", _CLI_DEFAULT_USER_ID or ENV_DEFAULT_USER_ID)
     server.run(transport="stdio")
 
 
