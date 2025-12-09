@@ -44,6 +44,30 @@ Or with pip:
 pip install mem0-mcp-server
 ```
 
+### Provisional Deployment (from GitHub)
+
+You can deploy directly from GitHub without installing:
+
+```json
+{
+  "mcpServers": {
+    "mem0": {
+      "command": "uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/alfonsodg/mem0-mcp.git@v0.2.2",
+        "mem0-mcp-server",
+        "--api-key=YOUR_MEM0_API_KEY",
+        "--user-id=your-user-id"
+      ],
+      "tools": ["*"]
+    }
+  }
+}
+```
+
+Replace `YOUR_MEM0_API_KEY` with your actual Mem0 API key from https://app.mem0.ai
+
 ### Client Configuration
 
 Add this configuration to your MCP client:
