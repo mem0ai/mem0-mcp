@@ -3,8 +3,8 @@ requires = ["hatchling>=1.27.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mem0-mcp-server"
-version = "0.2.1"
+name = "mem0-mcp-server-alfonsodg"
+version = "0.2.2"
 description = "Model Context Protocol server that exposes the Mem0 long-term memory API as tools"
 readme = "README.md"
 license = {text = "Apache-2.0"}
