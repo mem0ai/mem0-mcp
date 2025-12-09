@@ -233,6 +233,9 @@ mem0-mcp-server
 # Or with uv
 uv sync
 uv run mem0-mcp-server
+
+# Run tests
+pytest
 ```
 
 </details>
