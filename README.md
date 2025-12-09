@@ -68,6 +68,9 @@ You can deploy directly from GitHub without installing:
 
 Replace `YOUR_MEM0_API_KEY` with your actual Mem0 API key from https://app.mem0.ai
 
+**Why CLI arguments instead of env vars?**  
+GitHub Copilot CLI (and some other MCP clients) have issues with environment variables in MCP server configurations. Using CLI arguments (`--api-key`, `--user-id`) ensures compatibility across all MCP clients.
+
 ### Client Configuration
 
 Add this configuration to your MCP client:
