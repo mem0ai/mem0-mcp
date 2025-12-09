@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import logging
 import os
+import time
+from functools import lru_cache
 from typing import Annotated, Any, Callable, Dict, Optional, TypeVar
 
 from dotenv import load_dotenv
@@ -14,26 +17,15 @@ from mem0 import MemoryClient
 from mem0.exceptions import MemoryError
 from pydantic import Field
 
-try:  # Support both package (`python -m mem0_mcp.server`) and script (`python mem0_mcp/server.py`) runs.
-    from .schemas import (
-        AddMemoryArgs,
-        ConfigSchema,
-        DeleteAllArgs,
-        DeleteEntitiesArgs,
-        GetMemoriesArgs,
-        SearchMemoriesArgs,
-        ToolMessage,
-    )
-except ImportError:  # pragma: no cover - fallback for script execution
-    from schemas import (
-        AddMemoryArgs,
-        ConfigSchema,
-        DeleteAllArgs,
-        DeleteEntitiesArgs,
-        GetMemoriesArgs,
-        SearchMemoriesArgs,
-        ToolMessage,
-    )
+from .schemas import (
+    AddMemoryArgs,
+    ConfigSchema,
+    DeleteAllArgs,
+    DeleteEntitiesArgs,
+    GetMemoriesArgs,
+    SearchMemoriesArgs,
+    ToolMessage,
+)
 
 load_dotenv()
 
@@ -60,6 +52,10 @@ except ImportError:  # pragma: no cover - Smithery optional
     smithery = _SmitheryFallback()  # type: ignore[assignment]
 
 
+# CLI arguments override environment variables
+_CLI_API_KEY: Optional[str] = None
+_CLI_DEFAULT_USER_ID: Optional[str] = None
+
 # graph remains off by default , also set the default user_id to "mem0-mcp" when nothing set
 ENV_API_KEY = os.getenv("MEM0_API_KEY")
 ENV_DEFAULT_USER_ID = os.getenv("MEM0_DEFAULT_USER_ID", "mem0-mcp")
@@ -68,8 +64,19 @@ ENV_ENABLE_GRAPH_DEFAULT = os.getenv("MEM0_ENABLE_GRAPH_DEFAULT", "false").lower
     "true",
     "yes",
 }
+ENV_DISABLE_DNS_REBINDING_PROTECTION = os.getenv("MEM0_DISABLE_DNS_REBINDING_PROTECTION", "false").lower() in {
+    "1",
+    "true",
+    "yes",
+}
 
-_CLIENT_CACHE: Dict[str, MemoryClient] = {}
+
+@lru_cache(maxsize=100)
+def _mem0_client(api_key: str) -> MemoryClient:
+    """Create and cache MemoryClient instances with LRU eviction."""
+    if not api_key.startswith("m0-") or len(api_key) < 10:
+        raise ValueError("Invalid MEM0_API_KEY format. Expected format: m0-...")
+    return MemoryClient(api_key=api_key)
 
 
 def _config_value(source: Any, field: str):
@@ -98,45 +105,49 @@ def _with_default_filters(
 
 
 def _mem0_call(func, *args, **kwargs):
-    try:
-        result = func(*args, **kwargs)
-    except MemoryError as exc:  # surface structured error back to MCP client
-        logger.error("Mem0 call failed: %s", exc)
-        # returns the erorr to the model
-        return json.dumps(
-            {
-                "error": str(exc),
-                "status": getattr(exc, "status", None),
-                "payload": getattr(exc, "payload", None),
-            },
-            ensure_ascii=False,
-        )
-    return json.dumps(result, ensure_ascii=False)
+    max_retries = 3
+    base_delay = 1.0
+    
+    for attempt in range(max_retries):
+        try:
+            result = func(*args, **kwargs)
+            return json.dumps(result, ensure_ascii=False)
+        except MemoryError as exc:
+            status = getattr(exc, "status", None)
+            
+            # Retry on 5xx errors or network issues
+            if status and 500 <= status < 600 and attempt < max_retries - 1:
+                delay = base_delay * (2 ** attempt)
+                logger.warning(f"Mem0 call failed (attempt {attempt + 1}/{max_retries}), retrying in {delay}s: {exc}")
+                time.sleep(delay)
+                continue
+            
+            # Final failure or non-retryable error
+            logger.error("Mem0 call failed: %s", exc)
+            return json.dumps(
+                {
+                    "error": str(exc),
+                    "status": status,
+                    "payload": getattr(exc, "payload", None),
+                },
+                ensure_ascii=False,
+            )
 
 
 def _resolve_settings(ctx: Context | None) -> tuple[str, str, bool]:
     session_config = getattr(ctx, "session_config", None)
-    api_key = _config_value(session_config, "mem0_api_key") or ENV_API_KEY
+    api_key = _CLI_API_KEY or _config_value(session_config, "mem0_api_key") or ENV_API_KEY
     if not api_key:
         raise RuntimeError(
-            "MEM0_API_KEY is required (via Smithery config, session config, or environment) to run the Mem0 MCP server."
+            "MEM0_API_KEY is required (via CLI args, Smithery config, session config, or environment) to run the Mem0 MCP server."
         )
 
-    default_user = _config_value(session_config, "default_user_id") or ENV_DEFAULT_USER_ID
+    default_user = _CLI_DEFAULT_USER_ID or _config_value(session_config, "default_user_id") or ENV_DEFAULT_USER_ID
     enable_graph_default = _config_value(session_config, "enable_graph_default")
     if enable_graph_default is None:
         enable_graph_default = ENV_ENABLE_GRAPH_DEFAULT
 
     return api_key, default_user, enable_graph_default
-
-
-# init the client
-def _mem0_client(api_key: str) -> MemoryClient:
-    client = _CLIENT_CACHE.get(api_key)
-    if client is None:
-        client = MemoryClient(api_key=api_key)
-        _CLIENT_CACHE[api_key] = client
-    return client
 
 
 def _default_enable_graph(enable_graph: Optional[bool], default: bool) -> bool:
@@ -161,7 +172,9 @@ def create_server() -> FastMCP:
         "mem0",
         host=os.getenv("HOST", "0.0.0.0"),
         port=int(os.getenv("PORT", "8081")),
-        transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False),
+        transport_security=TransportSecuritySettings(
+            enable_dns_rebinding_protection=not ENV_DISABLE_DNS_REBINDING_PROTECTION
+        ),
     )
 
     # graph is disabled by default to make queries simpler and fast
@@ -476,9 +489,21 @@ Tips:
 
 def main() -> None:
     """Run the MCP server over stdio."""
+    global _CLI_API_KEY, _CLI_DEFAULT_USER_ID
+    
+    parser = argparse.ArgumentParser(description="Mem0 MCP Server")
+    parser.add_argument("--api-key", help="Mem0 API key (overrides MEM0_API_KEY env var)")
+    parser.add_argument("--user-id", help="Default user ID (overrides MEM0_DEFAULT_USER_ID env var)")
+    
+    args = parser.parse_args()
+    
+    if args.api_key:
+        _CLI_API_KEY = args.api_key
+    if args.user_id:
+        _CLI_DEFAULT_USER_ID = args.user_id
 
     server = create_server()
-    logger.info("Starting Mem0 MCP server (default user=%s)", ENV_DEFAULT_USER_ID)
+    logger.info("Starting Mem0 MCP server (default user=%s)", _CLI_DEFAULT_USER_ID or ENV_DEFAULT_USER_ID)
     server.run(transport="stdio")
 
 
