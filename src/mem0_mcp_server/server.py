@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 import logging
 import os
+import time
+from functools import lru_cache
 from typing import Annotated, Any, Callable, Dict, Optional, TypeVar
 
 from dotenv import load_dotenv
@@ -14,26 +16,15 @@ from mem0 import MemoryClient
 from mem0.exceptions import MemoryError
 from pydantic import Field
 
-try:  # Support both package (`python -m mem0_mcp.server`) and script (`python mem0_mcp/server.py`) runs.
-    from .schemas import (
-        AddMemoryArgs,
-        ConfigSchema,
-        DeleteAllArgs,
-        DeleteEntitiesArgs,
-        GetMemoriesArgs,
-        SearchMemoriesArgs,
-        ToolMessage,
-    )
-except ImportError:  # pragma: no cover - fallback for script execution
-    from schemas import (
-        AddMemoryArgs,
-        ConfigSchema,
-        DeleteAllArgs,
-        DeleteEntitiesArgs,
-        GetMemoriesArgs,
-        SearchMemoriesArgs,
-        ToolMessage,
-    )
+from .schemas import (
+    AddMemoryArgs,
+    ConfigSchema,
+    DeleteAllArgs,
+    DeleteEntitiesArgs,
+    GetMemoriesArgs,
+    SearchMemoriesArgs,
+    ToolMessage,
+)
 
 load_dotenv()
 
@@ -68,8 +59,19 @@ ENV_ENABLE_GRAPH_DEFAULT = os.getenv("MEM0_ENABLE_GRAPH_DEFAULT", "false").lower
     "true",
     "yes",
 }
+ENV_DISABLE_DNS_REBINDING_PROTECTION = os.getenv("MEM0_DISABLE_DNS_REBINDING_PROTECTION", "false").lower() in {
+    "1",
+    "true",
+    "yes",
+}
 
-_CLIENT_CACHE: Dict[str, MemoryClient] = {}
+
+@lru_cache(maxsize=100)
+def _mem0_client(api_key: str) -> MemoryClient:
+    """Create and cache MemoryClient instances with LRU eviction."""
+    if not api_key.startswith("m0-") or len(api_key) < 10:
+        raise ValueError("Invalid MEM0_API_KEY format. Expected format: m0-...")
+    return MemoryClient(api_key=api_key)
 
 
 def _config_value(source: Any, field: str):
@@ -98,20 +100,33 @@ def _with_default_filters(
 
 
 def _mem0_call(func, *args, **kwargs):
-    try:
-        result = func(*args, **kwargs)
-    except MemoryError as exc:  # surface structured error back to MCP client
-        logger.error("Mem0 call failed: %s", exc)
-        # returns the erorr to the model
-        return json.dumps(
-            {
-                "error": str(exc),
-                "status": getattr(exc, "status", None),
-                "payload": getattr(exc, "payload", None),
-            },
-            ensure_ascii=False,
-        )
-    return json.dumps(result, ensure_ascii=False)
+    max_retries = 3
+    base_delay = 1.0
+    
+    for attempt in range(max_retries):
+        try:
+            result = func(*args, **kwargs)
+            return json.dumps(result, ensure_ascii=False)
+        except MemoryError as exc:
+            status = getattr(exc, "status", None)
+            
+            # Retry on 5xx errors or network issues
+            if status and 500 <= status < 600 and attempt < max_retries - 1:
+                delay = base_delay * (2 ** attempt)
+                logger.warning(f"Mem0 call failed (attempt {attempt + 1}/{max_retries}), retrying in {delay}s: {exc}")
+                time.sleep(delay)
+                continue
+            
+            # Final failure or non-retryable error
+            logger.error("Mem0 call failed: %s", exc)
+            return json.dumps(
+                {
+                    "error": str(exc),
+                    "status": status,
+                    "payload": getattr(exc, "payload", None),
+                },
+                ensure_ascii=False,
+            )
 
 
 def _resolve_settings(ctx: Context | None) -> tuple[str, str, bool]:
@@ -128,15 +143,6 @@ def _resolve_settings(ctx: Context | None) -> tuple[str, str, bool]:
         enable_graph_default = ENV_ENABLE_GRAPH_DEFAULT
 
     return api_key, default_user, enable_graph_default
-
-
-# init the client
-def _mem0_client(api_key: str) -> MemoryClient:
-    client = _CLIENT_CACHE.get(api_key)
-    if client is None:
-        client = MemoryClient(api_key=api_key)
-        _CLIENT_CACHE[api_key] = client
-    return client
 
 
 def _default_enable_graph(enable_graph: Optional[bool], default: bool) -> bool:
@@ -161,7 +167,9 @@ def create_server() -> FastMCP:
         "mem0",
         host=os.getenv("HOST", "0.0.0.0"),
         port=int(os.getenv("PORT", "8081")),
-        transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False),
+        transport_security=TransportSecuritySettings(
+            enable_dns_rebinding_protection=not ENV_DISABLE_DNS_REBINDING_PROTECTION
+        ),
     )
 
     # graph is disabled by default to make queries simpler and fast
