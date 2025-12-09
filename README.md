@@ -120,6 +120,7 @@ The Mem0 MCP server enables powerful memory capabilities for your AI application
 - `MEM0_API_KEY` (required) – Mem0 platform API key.
 - `MEM0_DEFAULT_USER_ID` (optional) – default `user_id` injected into filters and write requests (defaults to `mem0-mcp`).
 - `MEM0_ENABLE_GRAPH_DEFAULT` (optional) – Enable graph memories by default (defaults to `false`).
+- `MEM0_DISABLE_DNS_REBINDING_PROTECTION` (optional) – Disable DNS rebinding protection for local development (defaults to `false`, protection enabled).
 - `MEM0_MCP_AGENT_MODEL` (optional) – default LLM for the bundled agent example (defaults to `openai:gpt-4o-mini`).
 
 ## Advanced Setup
