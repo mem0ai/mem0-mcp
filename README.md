@@ -55,7 +55,7 @@ You can deploy directly from GitHub without installing:
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/alfonsodg/mem0-mcp.git@v0.2.2",
+        "git+https://github.com/alfonsodg/mem0-mcp.git@v0.2.3",
         "mem0-mcp-server",
         "--api-key=YOUR_MEM0_API_KEY",
         "--user-id=your-user-id"

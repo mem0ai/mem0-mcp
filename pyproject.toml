@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mem0-mcp-server-alfonsodg"
-version = "0.2.2"
+version = "0.2.3"
 description = "Model Context Protocol server that exposes the Mem0 long-term memory API as tools"
 readme = "README.md"
 license = {text = "Apache-2.0"}
