@@ -162,10 +162,10 @@ def create_server() -> FastMCP:
 
     # When running inside Smithery, the platform probes the server without user-provided
     # session config, so we defer the hard requirement for MEM0_API_KEY until a tool call.
-    if not ENV_API_KEY:
+    if not ENV_API_KEY and not _CLI_API_KEY:
         logger.warning(
             "MEM0_API_KEY is not set; Smithery health checks will pass, but every tool "
-            "invocation will fail until a key is supplied via session config or env vars."
+            "invocation will fail until a key is supplied via session config, CLI args, or env vars."
         )
 
     server = FastMCP(
